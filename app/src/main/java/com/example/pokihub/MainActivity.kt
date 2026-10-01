@@ -134,7 +134,7 @@ class MainActivity : Activity() {
                 customCb = callback
                 root.addView(view, FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT))
                 main.visibility = View.GONE
-                setImmersive(true)
+                setImmersiveMode(true)
             }
 
             override fun onHideCustomView() {
@@ -143,7 +143,7 @@ class MainActivity : Activity() {
                 customCb?.onCustomViewHidden()
                 customCb = null
                 main.visibility = View.VISIBLE
-                setImmersive(false)
+                setImmersiveMode(false)
             }
         }
 
@@ -188,7 +188,7 @@ class MainActivity : Activity() {
     }
 
     @Suppress("DEPRECATION")
-    private fun setImmersive(on: Boolean) {
+    private fun setImmersiveMode(on: Boolean) {
         window.decorView.systemUiVisibility = if (on) {
             View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
