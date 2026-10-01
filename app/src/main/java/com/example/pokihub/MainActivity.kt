@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -36,6 +35,7 @@ class MainActivity : Activity() {
     private lateinit var progress: ProgressBar
     private var customView: View? = null
     private var customCb: WebChromeClient.CustomViewCallback? = null
+    private lateinit var chrome: WebChromeClient
 
     private val prefs by lazy { getSharedPreferences("fav", MODE_PRIVATE) }
 
@@ -119,13 +119,13 @@ class MainActivity : Activity() {
             }
         }
 
-        web.webChromeClient = object : WebChromeClient() {
+        chrome = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView, newProgress: Int) {
                 progress.progress = newProgress
                 progress.visibility = if (newProgress in 1..99) View.VISIBLE else View.GONE
             }
 
-            override fun onShowCustomView(view: View, callback: CustomViewCallback) {
+            override fun onShowCustomView(view: View, callback: WebChromeClient.CustomViewCallback) {
                 if (customView != null) {
                     callback.onCustomViewHidden()
                     return
@@ -147,7 +147,13 @@ class MainActivity : Activity() {
             }
         }
 
-        if (savedInstanceState != null) web.restoreState(savedInstanceState) else web.loadUrl(homeUrl)
+        web.webChromeClient = chrome
+
+        if (savedInstanceState != null) {
+            web.restoreState(savedInstanceState)
+        } else {
+            web.loadUrl(homeUrl)
+        }
     }
 
     private fun navButton(label: String, onClick: () -> Unit): TextView =
@@ -209,7 +215,7 @@ class MainActivity : Activity() {
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         when {
-            customView != null -> web.webChromeClient?.onHideCustomView()
+            customView != null -> chrome.onHideCustomView()
             web.canGoBack() -> web.goBack()
             else -> super.onBackPressed()
         }
