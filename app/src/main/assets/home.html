@@ -1,1 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Poki Hub</title>
+<style>
+  :root { --bg:#0f1020; --card:#1b1d3a; --acc:#6c5ce7; --txt:#f2f2fa; --mut:#9a9cc0; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin:0; background:var(--bg); color:var(--txt); font-family: system-ui, sans-serif; padding:18px 16px 28px; }
+  h1 { font-size:24px; margin:4px 0 2px; }
+  p.sub { color:var(--mut); margin:0 0 16px; font-size:14px; }
+  form { display:flex; gap:8px; margin-bottom:20px; }
+  input { flex:1; padding:13px 14px; border-radius:12px; border:1px solid #2c2f58; background:var(--card); color:var(--txt); font-size:15px; outline:none; }
+  button { padding:0 18px; border:0; border-radius:12px; background:var(--acc); color:#fff; font-weight:600; font-size:15px; }
+  h2 { font-size:16px; margin:22px 0 10px; color:var(--mut); font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+  .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  a.card { display:block; background:var(--card); border-radius:14px; padding:16px 14px; color:var(--txt); text-decoration:none; font-weight:600; }
+  a.card span { display:block; font-size:26px; margin-bottom:6px; }
+  .fav { display:flex; align-items:center; gap:8px; background:var(--card); border-radius:12px; padding:12px 14px; margin-bottom:8px; }
+  .fav a { flex:1; color:var(--txt); text-decoration:none; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .fav b { color:#ff7675; padding:4px 8px; font-size:18px; }
+  .empty { color:var(--mut); font-size:14px; }
+  .hide { display:none; }
+</style>
+</head>
+<body>
+  <h1>🎮 Poki Hub</h1>
+  <p class="sub">Main game seru langsung dari HP-mu</p>
 
+  <div id="homeView">
+    <form id="sf">
+      <input id="q" type="search" placeholder="Cari game…" autocomplete="off">
+      <button type="submit">Cari</button>
+    </form>
+
+    <a class="card" href="https://poki.com/id" style="background:var(--acc);margin-bottom:6px"><span>🔥</span>Semua game populer</a>
+
+    <h2>Kategori</h2>
+    <div class="grid" id="cats"></div>
+  </div>
+
+  <div id="favView" class="hide">
+    <h2>Favoritmu</h2>
+    <div id="favList"></div>
+  </div>
+
+<script>
+  // Edit daftar kategori di sini (nama, emoji, slug URL Poki).
+  var CATS = [
+    ["Aksi","💥","action"], ["Petualangan","🗺️","adventure"],
+    ["Balapan","🏎️","racing"], ["Teka-teki","🧩","puzzle"],
+    ["Olahraga","⚽","sports"], ["Menembak","🎯","shooting"],
+    ["Strategi","♟️","strategy"], ["Kasual","🍬","casual"],
+    ["Arkade","🕹️","arcade"], ["Multiplayer","👥","multiplayer"]
+  ];
+  var BASE = "https://poki.com/id/";
+
+  document.getElementById("cats").innerHTML = CATS.map(function(c){
+    return '<a class="card" href="'+BASE+c[2]+'"><span>'+c[1]+'</span>'+c[0]+'</a>';
+  }).join("");
+
+  document.getElementById("sf").addEventListener("submit", function(e){
+    e.preventDefault();
+    var q = document.getElementById("q").value.trim();
+    if (q) location.href = BASE + "search?q=" + encodeURIComponent(q);
+  });
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+  function renderFav(){
+    var list = [];
+    try { list = JSON.parse(Android.getFavs()); } catch(e) {}
+    var el = document.getElementById("favList");
+    if (!list.length) { el.innerHTML = '<p class="empty">Belum ada favorit. Buka sebuah game lalu tekan ⭐ Simpan.</p>'; return; }
+    el.innerHTML = list.map(function(f, i){
+      return '<div class="fav"><a href="'+esc(f.u)+'">'+esc(f.t)+'</a><b data-i="'+i+'">✕</b></div>';
+    }).join("");
+    el.querySelectorAll("b").forEach(function(b){
+      b.onclick = function(){ Android.removeFav(list[b.dataset.i].u); renderFav(); };
+    });
+  }
+
+  function route(){
+    var fav = location.hash === "#fav";
+    document.getElementById("homeView").classList.toggle("hide", fav);
+    document.getElementById("favView").classList.toggle("hide", !fav);
+    if (fav) renderFav();
+  }
+  window.addEventListener("hashchange", route);
+  route();
+</script>
+</body>
+</html>
