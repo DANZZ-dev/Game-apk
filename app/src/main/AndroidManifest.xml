@@ -9,7 +9,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="Poki Hub"
         android:hardwareAccelerated="true"
-        android:theme="@android:style/Theme.Material.NoActionBar">
+        android:theme="@style/AppTheme">
 
         <activity
             android:name=".MainActivity"
