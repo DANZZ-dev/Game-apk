@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Offline</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:#0b0c1e;color:#f4f4ff;font-family:system-ui,sans-serif}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;animation:fade .4s ease backwards}
+  i{font-style:normal;font-size:72px;animation:bob 2.6s ease-in-out infinite}
+  h1{margin:14px 0 6px;font-size:22px}
+  p{margin:0 0 22px;color:#8e91b8;font-size:14px;line-height:1.6}
+  button{border:0;border-radius:14px;padding:14px 28px;font-size:15px;font-weight:700;color:#fff;background:linear-gradient(135deg,#7c6cff,#a04bff);transition:transform .15s}
+  button:active{transform:scale(.95)}
+  a{display:block;margin-top:16px;color:#a29bfe;font-size:14px;text-decoration:none;font-weight:600}
+  @keyframes bob{50%{transform:translateY(-8px) rotate(-5deg)}}
+  @keyframes fade{from{opacity:0;transform:translateY(12px)}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+  <i>📡</i>
+  <h1>Tidak ada koneksi</h1>
+  <p>Periksa internet kamu lalu coba lagi.</p>
+  <button id="retry">Coba lagi</button>
+  <a href="home.html">Kembali ke beranda</a>
+<script>
+  var u = new URLSearchParams(location.search).get("u");
+  document.getElementById("retry").onclick = function(){ if (u) location.href = u; else history.back(); };
+</script>
+</body>
+</html>
